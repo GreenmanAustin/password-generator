@@ -3,8 +3,11 @@
 
 // Get references to the #generate element
 var generateBtn = document.querySelector("#generate");
+var charTypes = [];
 
-var getPasswordLen = function () {
+const specialCharacters = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+
+var getPasswordLength = function () {
   len = prompt("Please input a number betweem 8 and 128 for number of character in your password.");
 
   while (len < 8 || len > 128) {
@@ -21,35 +24,64 @@ var getCharacterType = function (type) {
     yesType = yesType.toLowerCase();
   }
   if (yesType === 'y') {
-    return true;
-  } else {
-    return false;
+    charTypes.push(type);
   }
 }
 
-
-var passwordInfo = {
-  length: getPasswordLen(),
-  lowercase: getCharacterType("lowercase"),
-  uppercase: getCharacterType("uppercase"),
-  numeric: getCharacterType("numeric"),
-  specialCharter: getCharacterType("special")
+var randomNumber = function (min, max) {
+  var value = Math.floor(Math.random() * (max - min + 1)) + min;
+  return value;
 }
 
 
+var generatePassword = function (length) {
+  password = "";
+  for (i = 1; i <= length; i++) {
+    var charType = charTypes[randomNumber(0, charTypes.length - 1)];
+    switch (charType) {
+      case "lowercase":
+        var randomNum = randomNumber(97, 122);
+        password = password.concat(String.fromCharCode(randomNum));
+        break;
+      case "uppercase":
+        var randomNum = randomNumber(65, 90);
+        password = password.concat(String.fromCharCode(randomNum));
+        break;
+      case "numeric":
+        var randomNum = randomNumber(0, 9);
+        password = password.concat(randomNum);
+        break;
+      case "special":
+        var randomNum = randomNumber(0, specialCharacters.length - 1);
+        password = password.concat(specialCharacters[randomNum]);
+        break;
+    }
+  }
+  return password;
+}
 
+var getCharacterTypes = function () {
+  getCharacterType("lowercase");
+  getCharacterType("uppercase");
+  getCharacterType("numeric");
+  getCharacterType("special");
+  if (charTypes.length == 0) {
+    window.alert("You must choose at least one character type to generate a password.  Please try again.");
+    getCharacterTypes();
+  }
+}
 
 // Write password to the #password input
 function writePassword() {
+  charTypes = [];
+  length = getPasswordLength();
+  getCharacterTypes();
 
-  // var password = generatePassword();
+  var password = generatePassword(length);
 
   var passwordText = document.querySelector("#password");
 
-
-
   passwordText.value = password;
-
 
 }
 
